@@ -1,0 +1,75 @@
+version: '2'
+
+services:
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    links:
+      - mysql:db
+
+  nginx:
+    image: nginx:1.13
+    ports:
+      - "80:80"
+    volumes_from:
+      - dataphp
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  php:
+    restart: always
+    build:
+      context: php
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    volumes_from:
+      - dataphp
+
+  dataphp:
+    image: debian:jessie
+    volumes:
+      - ./app:/var/www/app
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - ./mysql/custom.cnf:/etc/mysql/mysql.conf.d/custom.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=EtNN2PJy
+      - MYSQL_USER=vipzal
+      - MYSQL_PASSWORD=vipzal
+      - MYSQL_DATABASE=vipzal
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+      - http.cors.allow-origin=*
+      - http.cors.enabled=true
+      - node.master=true
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+volumes:
+  esdata:
+    driver: local
+  mysqldata:
+    driver: local
