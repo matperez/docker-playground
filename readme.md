@@ -15,13 +15,11 @@ docker-compose up
 
 ## Установка пакетов и применение миграций
 ```
-docker-compose run php bash
+docker-compose exec php bash
 cd /var/www/app
 composer install --prefer-dist -vv
 php ./yii init --env=Development-Docker --overwrite=y
 php ./yii migrate
 ```
-
-
 
 

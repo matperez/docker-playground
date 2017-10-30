@@ -3,6 +3,7 @@ version: '2'
 services:
 
   adminer:
+    restart: always
     image: adminer
     ports:
       - 8080:8080
@@ -10,6 +11,7 @@ services:
       - mysql:db
 
   nginx:
+    restart: always
     image: nginx:1.13
     ports:
       - "80:80"
@@ -23,8 +25,8 @@ services:
     build:
       context: php
       dockerfile: Dockerfile
-    ports:
-      - "9000:9000"
+    expose:
+      - 9000
     volumes_from:
       - dataphp
 
@@ -34,6 +36,7 @@ services:
       - ./app:/var/www/app
 
   mysql:
+    restart: always
     image: mysql:5.7
     ports:
       - "3306:3306"
@@ -47,6 +50,7 @@ services:
       - MYSQL_DATABASE=vipzal
 
   elasticsearch:
+    restart: always
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.3
     environment:
       - cluster.name=docker-cluster

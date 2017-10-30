@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+
+  php:
+    extra_hosts:
+      - "dockerhost:10.0.75.1"
+    expose:
+      - 9001
